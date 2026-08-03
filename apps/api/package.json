@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "DutyWise API — customs brokerage as a service (sandbox)",
+  "description": "DutyWise API \u2014 customs brokerage as a service (sandbox)",
   "license": "MIT",
   "engines": {
     "node": ">=24"
@@ -42,5 +42,8 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "8.65.0",
     "vitest": "4.1.10"
+  },
+  "overrides": {
+    "esbuild": "0.25.12"
   }
 }
