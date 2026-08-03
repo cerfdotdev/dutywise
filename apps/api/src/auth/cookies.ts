@@ -23,6 +23,16 @@ export function setAuthCookies(reply: FastifyReply, accessToken: string, refresh
 }
 
 export function clearAuthCookies(reply: FastifyReply): void {
-  reply.clearCookie(ACCESS_COOKIE, { path: '/' });
-  reply.clearCookie(REFRESH_COOKIE, { path: '/' });
+  // __Host- cookies are Secure; a clearing Set-Cookie without the matching
+  // attributes (esp. Secure + Path=/) is rejected by browsers, so the session
+  // cookies would survive logout. Mirror the original attributes + maxAge 0.
+  const opts = {
+    httpOnly: true,
+    sameSite: 'strict' as const,
+    secure: config.isProduction,
+    path: '/',
+    maxAge: 0,
+  };
+  reply.setCookie(ACCESS_COOKIE, '', opts);
+  reply.setCookie(REFRESH_COOKIE, '', opts);
 }

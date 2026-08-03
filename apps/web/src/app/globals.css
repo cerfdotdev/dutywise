@@ -8,6 +8,7 @@
   --color-duty-amber: #f5a623;
   --color-clearance-green: #2fa46f;
   --color-ledger-paper: #faf8f4;
+  --color-paper: #faf8f4; /* portal text on dark navy (was undefined — all text-paper fell back to dark ink) */
   --color-surface: #ffffff;
   --color-ink: #1a2332;
   --color-ink-soft: #4a5568;
