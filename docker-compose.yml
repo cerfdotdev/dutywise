@@ -1,0 +1,68 @@
+# ————— Docker Compose — DutyWise local stack —————
+# Used by Dokploy (compose service) and for local dev.
+# Never put real secrets here; use env overrides (see .env.example).
+
+name: dutywise
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dutywise}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dutywise_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-dutywise}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dutywise} -d ${POSTGRES_DB:-dutywise}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 8000
+      DATABASE_URL: postgres://${POSTGRES_USER:-dutywise}:${POSTGRES_PASSWORD:-dutywise_dev_password}@postgres:5432/${POSTGRES_DB:-dutywise}
+      JWT_SECRET: ${JWT_SECRET:-local_dev_secret_change_me_32_chars_minimum}
+      SEED_DEMO: ${SEED_DEMO:-true}
+      SANDBOX_MODE: ${SANDBOX_MODE:-true}
+      TRUST_PROXY: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:8000/api/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      API_INTERNAL_URL: http://api:8000
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NEXT_PUBLIC_SANDBOX_NOTICE: ${NEXT_PUBLIC_SANDBOX_NOTICE:-true}
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/api/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+volumes:
+  pgdata:

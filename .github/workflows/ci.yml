@@ -1,0 +1,172 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (lint · typecheck · test · build)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: dutywise_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d dutywise_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+      - run: npm ci
+        working-directory: apps/api
+      - run: npm run typecheck
+        working-directory: apps/api
+      - run: npm run lint
+        working-directory: apps/api
+      - run: npm run db:generate -- --dry-run 2>/dev/null || true
+        working-directory: apps/api
+        continue-on-error: true
+      - run: npm test
+        working-directory: apps/api
+        env:
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/dutywise_test
+      - run: npm run build
+        working-directory: apps/api
+
+  web:
+    name: Web (lint · typecheck · test · build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+        working-directory: apps/web
+      - run: npm run typecheck
+        working-directory: apps/web
+      - run: npm run lint
+        working-directory: apps/web
+      - run: npm test
+        working-directory: apps/web
+        env:
+          API_INTERNAL_URL: http://localhost:8000
+      - run: npm run build
+        working-directory: apps/web
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_SANDBOX_NOTICE: "true"
+
+  images:
+    name: Docker images (build · trivy · SBOM)
+    needs: [api, web]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Build API image
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: apps/api
+          file: apps/api/Dockerfile
+          push: false
+          tags: dutywise-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build Web image
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: apps/web
+          file: apps/web/Dockerfile
+          push: false
+          tags: dutywise-web:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan API (trivy)
+        uses: aquasecurity/trivy-action@6c175e9c4083a92bbca2f9724c8a5e33bc2d97a5 # v0.30.0
+        with:
+          image-ref: dutywise-api:ci
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          trivy-config: .github/trivy.yaml
+
+      - name: Scan Web (trivy)
+        uses: aquasecurity/trivy-action@6c175e9c4083a92bbca2f9724c8a5e33bc2d97a5 # v0.30.0
+        with:
+          image-ref: dutywise-web:ci
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          trivy-config: .github/trivy.yaml
+
+      - name: SBOM — API (syft)
+        uses: anchore/sbom-action@f325610c9f50a54015d37c8d16cb3b0e2c8f4de0 # v0.18.0
+        with:
+          image: dutywise-api:ci
+          format: cyclonedx-json
+          output-file: sbom-api.json
+
+      - name: SBOM — Web (syft)
+        uses: anchore/sbom-action@f325610c9f50a54015d37c8d16cb3b0e2c8f4de0 # v0.18.0
+        with:
+          image: dutywise-web:ci
+          format: cyclonedx-json
+          output-file: sbom-web.json
+
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fddac6c33bbcb1728ee3 # v4
+        with:
+          name: sboms
+          path: sbom-*.json
+          if-no-files-found: error
+
+  deploy:
+    name: Deploy to Dokploy
+    needs: [images]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: production-deploy
+    permissions:
+      contents: read
+    steps:
+      - name: Trigger Dokploy deployment
+        env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_KEY: ${{ secrets.DOKPLOYKEY }}
+          COMPOSE_ID: ${{ secrets.DOKPLOY_COMPOSE_ID }}
+        run: |
+          set -euo pipefail
+          resp=$(curl -sS -X POST "${DOKPLOY_URL}/api/compose.deploy" \
+            -H "x-api-key: ${DOKPLOY_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{\"composeId\":\"${COMPOSE_ID}\"}")
+          echo "deploy response: ${resp}"
+          echo "${resp}" | grep -qE '"composeId"' || { echo "deploy trigger failed"; exit 1; }

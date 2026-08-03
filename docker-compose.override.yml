@@ -1,0 +1,9 @@
+# Local development only — overrides host port bindings.
+# Dokploy ignores this file (it deploys docker-compose.yml as-is).
+services:
+  api:
+    ports:
+      - "8000:8000"
+  web:
+    ports:
+      - "3100:3000"

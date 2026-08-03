@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+tests
+*.md
+.git
+.gitignore
+vitest.config.ts
+eslint.config.js
+drizzle.config.ts

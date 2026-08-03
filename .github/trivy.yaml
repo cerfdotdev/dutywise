@@ -1,0 +1,7 @@
+# Trivy configuration — fail on CRITICAL/HIGH, ignore unfixed (OS) issues.
+exit-code: 1
+severity:
+  - CRITICAL
+  - HIGH
+ignore-unfixed: true
+timeout: 5m0s

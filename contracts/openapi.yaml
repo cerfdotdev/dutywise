@@ -1,0 +1,591 @@
+openapi: 3.1.0
+info:
+  title: DutyWise API
+  version: 0.1.0
+  description: |
+    DutyWise — AI-native customs brokerage as a service. Sandbox API.
+    Auth is cookie-based: __Host-dw_access (15 min) + __Host-dw_refresh (7d, rotating, reuse-detected).
+    All routes except healthz/auth/leads/audits require authentication (company-scoped).
+    ALL refund figures are ESTIMATES, never claims ("we file, CBP pays" — no guarantees).
+servers:
+  - url: /api
+paths:
+  /healthz:
+    get:
+      operationId: healthz
+      summary: Liveness/readiness probe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /auth/register:
+    post:
+      operationId: authRegister
+      summary: Register company + owner. Sets auth cookies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+        '409':
+          description: Email already registered
+  /auth/login:
+    post:
+      operationId: authLogin
+      summary: Login. Sets auth cookies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+        '401':
+          description: Invalid credentials
+  /auth/refresh:
+    post:
+      operationId: authRefresh
+      summary: Rotate refresh token (reuse detection revokes family). Sets cookies.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+        '401':
+          description: Invalid or reused refresh token
+  /auth/logout:
+    post:
+      operationId: authLogout
+      summary: Revoke refresh token family. Clears cookies.
+      responses:
+        '204':
+          description: OK
+  /me:
+    get:
+      operationId: me
+      summary: Current user + company
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+  /leads:
+    post:
+      operationId: createLead
+      summary: Public waitlist / audit interest capture
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeadRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lead'
+  /audits:
+    post:
+      operationId: createAudit
+      summary: |
+        Public free refund-eligibility audit. Body is JSON entries array OR raw CSV
+        (content-type text/csv) with columns: entry_number,amount_paid.
+        Returns an audit id; the report is available via GET /audits/{id} (no auth).
+        Estimates only — never claims.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditRequest'
+          text/csv:
+            schema:
+              type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditCreated'
+        '400':
+          description: Invalid input (empty or >5000 entries)
+  /audits/{id}:
+    get:
+      operationId: getAudit
+      summary: Full audit report (public, by id)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audit'
+        '404':
+          description: Not found
+  /shipments:
+    post:
+      operationId: createShipment
+      summary: Create a shipment (sandbox)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShipmentRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+    get:
+      operationId: listShipments
+      summary: List company shipments
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [draft, booked, in_transit, cleared, delayed, cancelled]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shipment'
+  /shipments/{id}:
+    get:
+      operationId: getShipment
+      summary: Shipment detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+        '404':
+          description: Not found
+  /entries:
+    post:
+      operationId: createEntry
+      summary: Create an entry (sandbox). Auto-generates invoice line from rate card.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntryRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'
+        '400':
+          description: Invalid HS code format
+    get:
+      operationId: listEntries
+      summary: List company entries
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [processing, review, filed, accepted, released, held, cancelled]
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+  /entries/{id}:
+    get:
+      operationId: getEntry
+      summary: Entry detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'
+        '404':
+          description: Not found
+  /alerts:
+    get:
+      operationId: listAlerts
+      summary: Company alerts (tariff watch, holds, expiries)
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [open, acknowledged, resolved]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Alert'
+  /alerts/{id}/ack:
+    post:
+      operationId: ackAlert
+      summary: Acknowledge an alert
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: OK
+  /invoices:
+    get:
+      operationId: listInvoices
+      summary: Company invoices
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+  /invoices/{id}:
+    get:
+      operationId: getInvoice
+      summary: Invoice detail with items
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '404':
+          description: Not found
+  /billing/summary:
+    get:
+      operationId: billingSummary
+      summary: Billing summary (totals by status, monthly spend)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingSummary'
+  /monitoring/summary:
+    get:
+      operationId: monitoringSummary
+      summary: Monitoring overview (open alerts, watchlist, active tariff changes)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringSummary'
+components:
+  schemas:
+    Health:
+      type: object
+      required: [status, version]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        version:
+          type: string
+    RegisterRequest:
+      type: object
+      required: [companyName, name, email, password]
+      properties:
+        companyName: { type: string, minLength: 2, maxLength: 120 }
+        name: { type: string, minLength: 2, maxLength: 120 }
+        email: { type: string, format: email }
+        password: { type: string, minLength: 10, maxLength: 128 }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+    User:
+      type: object
+      required: [id, name, email, role]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [owner, admin, broker, compliance] }
+    Company:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        licenseNote:
+          type: string
+          description: Broker license status display string
+    Me:
+      type: object
+      required: [user, company]
+      properties:
+        user: { $ref: '#/components/schemas/User' }
+        company: { $ref: '#/components/schemas/Company' }
+    LeadRequest:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+        companyName: { type: string, maxLength: 120 }
+    Lead:
+      type: object
+      required: [id, email, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string }
+        companyName: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+    AuditRequest:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+        companyName: { type: string, maxLength: 120 }
+        entries:
+          type: array
+          maxItems: 5000
+          items:
+            $ref: '#/components/schemas/AuditEntryInput'
+    AuditEntryInput:
+      type: object
+      required: [entryNumber]
+      properties:
+        entryNumber:
+          type: string
+          description: CBP entry number (e.g., 123-4567890-1) or 9-digit
+        amountPaid:
+          type: number
+          description: Estimated duty paid on the entry (optional)
+    AuditCreated:
+      type: object
+      required: [auditId]
+      properties:
+        auditId: { type: string, format: uuid }
+    Audit:
+      type: object
+      required: [id, status, totalEstimate, entries, summary, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string, enum: [completed] }
+        totalEstimate: { type: number }
+        interestEstimate: { type: number }
+        eligibleCount: { type: integer }
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEntryResult'
+        summary:
+          type: string
+          description: Plain-language summary including the "we file, CBP pays" note
+        disclaimer:
+          type: string
+        createdAt: { type: string, format: date-time }
+    AuditEntryResult:
+      type: object
+      required: [entryNumber, eligible, estimate, reason]
+      properties:
+        entryNumber: { type: string }
+        eligible: { type: boolean }
+        estimate: { type: number }
+        reason: { type: string }
+    ShipmentRequest:
+      type: object
+      required: [mode, carrier, blNumber]
+      properties:
+        mode: { type: string, enum: [ocean, air, truck] }
+        carrier: { type: string, maxLength: 120 }
+        blNumber: { type: string, maxLength: 120 }
+        originPort: { type: string, maxLength: 120 }
+        destinationPort: { type: string, maxLength: 120 }
+        eta: { type: string, format: date, nullable: true }
+    Shipment:
+      type: object
+      required: [id, mode, carrier, blNumber, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        mode: { type: string, enum: [ocean, air, truck] }
+        carrier: { type: string }
+        blNumber: { type: string }
+        originPort: { type: string, nullable: true }
+        destinationPort: { type: string, nullable: true }
+        eta: { type: string, format: date, nullable: true }
+        status: { type: string, enum: [draft, booked, in_transit, cleared, delayed, cancelled] }
+        entryCount: { type: integer }
+        createdAt: { type: string, format: date-time }
+    EntryRequest:
+      type: object
+      required: [hsCode, description, quantity, unitValue]
+      properties:
+        shipmentId: { type: string, format: uuid, nullable: true }
+        mode: { type: string, enum: [ocean, air, truck], default: ocean }
+        hsCode: { type: string, pattern: '^\d{6,10}$' }
+        description: { type: string, minLength: 3, maxLength: 255 }
+        quantity: { type: number, exclusiveMinimum: 0 }
+        unitValue: { type: number, exclusiveMinimum: 0 }
+        countryOfOrigin: { type: string, maxLength: 2 }
+    Entry:
+      type: object
+      required: [id, entryNumber, status, mode, hsCode, description, dutyAmount, fee, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        entryNumber: { type: string }
+        status: { type: string, enum: [processing, review, filed, accepted, released, held, cancelled] }
+        mode: { type: string, enum: [ocean, air, truck] }
+        hsCode: { type: string }
+        description: { type: string }
+        quantity: { type: number }
+        unitValue: { type: number }
+        dutyAmount: { type: number }
+        fee: { type: number, description: Rate-card brokerage fee (99/89/69) + ISF 35 when applicable }
+        signedBy: { type: string, nullable: true, description: Licensed broker display (sandbox) }
+        createdAt: { type: string, format: date-time }
+    Alert:
+      type: object
+      required: [id, type, severity, title, message, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [tariff_change, hold, expiry, refund_window] }
+        severity: { type: string, enum: [info, warning, critical] }
+        title: { type: string }
+        message: { type: string }
+        status: { type: string, enum: [open, acknowledged, resolved] }
+        createdAt: { type: string, format: date-time }
+    Invoice:
+      type: object
+      required: [id, number, total, status, createdAt, items]
+      properties:
+        id: { type: string, format: uuid }
+        number: { type: string }
+        total: { type: number }
+        status: { type: string, enum: [open, paid, void] }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItem'
+        createdAt: { type: string, format: date-time }
+    InvoiceItem:
+      type: object
+      required: [description, amount]
+      properties:
+        description: { type: string }
+        amount: { type: number }
+    BillingSummary:
+      type: object
+      required: [openTotal, paidTotal, currentMonthTotal, monthlySeries]
+      properties:
+        openTotal: { type: number }
+        paidTotal: { type: number }
+        currentMonthTotal: { type: number }
+        monthlySeries:
+          type: array
+          items:
+            type: object
+            properties:
+              month: { type: string }
+              total: { type: number }
+    MonitoringSummary:
+      type: object
+      required: [openAlerts, criticalAlerts, watchlistCount, activeChanges]
+      properties:
+        openAlerts: { type: integer }
+        criticalAlerts: { type: integer }
+        watchlistCount: { type: integer }
+        activeChanges:
+          type: array
+          items:
+            type: object
+            properties:
+              hsCode: { type: string }
+              description: { type: string }
+              oldRate: { type: string }
+              newRate: { type: string }
+              effectiveDate: { type: string }
+              matchedSkus: { type: array, items: { type: string } }
