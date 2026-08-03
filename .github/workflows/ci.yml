@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -41,9 +42,6 @@ jobs:
         working-directory: apps/api
       - run: npm run lint
         working-directory: apps/api
-      - run: npm run db:generate -- --dry-run 2>/dev/null || true
-        working-directory: apps/api
-        continue-on-error: true
       - run: npm test
         working-directory: apps/api
         env:
