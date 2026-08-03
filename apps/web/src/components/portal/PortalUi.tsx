@@ -167,8 +167,8 @@ export function Cell({
   return (
     <td
       className={`px-4 py-3.5 align-top text-sm ${right ? "text-right" : "text-left"} ${
-        mono ? "font-mono text-[0.8125rem]" : muted ? "text-mist/70" : "text-paper"
-      } ${className}`}
+        mono ? "font-mono text-[0.8125rem]" : ""
+      } ${muted ? "text-mist/70" : "text-paper"} ${className}`}
     >
       {children}
     </td>
