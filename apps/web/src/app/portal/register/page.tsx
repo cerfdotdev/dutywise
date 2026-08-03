@@ -65,7 +65,7 @@ export default function RegisterPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-harbor-navy px-4 py-12">
       <div className="w-full max-w-md">
         <div className="rounded-xl border border-white/10 bg-white/[0.05] p-8">
-          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.2em] text-mist/60">
+          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.2em] text-mist/75">
             Customer portal
           </p>
           <h1 className="mt-2 font-display text-3xl leading-tight text-paper">
@@ -139,7 +139,7 @@ export default function RegisterPage() {
                   ))}
                 </div>
                 {strength.label ? (
-                  <span className="font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-mist/60">
+                  <span className="font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-mist/75">
                     {strength.label}
                   </span>
                 ) : null}

@@ -51,7 +51,7 @@ export default function LoginPage() {
       ) : null}
       <div className="w-full max-w-md">
         <div className="rounded-xl border border-white/10 bg-white/[0.05] p-8">
-          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.2em] text-mist/60">
+          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.2em] text-mist/75">
             Customer portal
           </p>
           <h1 className="mt-2 font-display text-3xl leading-tight text-paper">
@@ -108,7 +108,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.05] p-5">
-          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-mist/60">
+          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-mist/75">
             Demo credentials — not real data
           </p>
           <dl className="mt-3 space-y-1.5 font-mono text-sm">
@@ -121,7 +121,7 @@ export default function LoginPage() {
               <dd className="text-paper">demo-pass-1234</dd>
             </div>
           </dl>
-          <p className="mt-3 text-xs leading-relaxed text-mist/60">
+          <p className="mt-3 text-xs leading-relaxed text-mist/75">
             Demo accounts only work in the sandbox. Use them to explore — no real filings or refunds.
           </p>
         </div>

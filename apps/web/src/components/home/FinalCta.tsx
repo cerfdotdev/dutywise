@@ -79,7 +79,7 @@ export function FinalCta() {
         aria-hidden="true"
         className="stamp-dark absolute -right-24 -top-24 grid size-80 animate-spin-slow place-items-center text-center"
       >
-        <span className="font-mono text-xs uppercase tracking-[0.24em] text-white/25">
+        <span className="font-mono text-xs uppercase tracking-[0.24em] text-mist/70">
           Duties done right · Free refund audit · Duties done right · Free refund audit ·
         </span>
       </div>
@@ -109,7 +109,7 @@ export function FinalCta() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Work email — we'll send your check"
-              className="h-[52px] w-72 rounded-[12px] border border-white/20 bg-white/5 px-4 font-mono text-sm text-white placeholder:text-mist/60 focus:border-duty-amber"
+              className="h-[52px] w-72 rounded-[12px] border border-white/20 bg-white/5 px-4 font-mono text-sm text-white placeholder:text-mist/70 focus:border-duty-amber"
             />
             <Button type="submit" variant="dark" size="md" magnetic={false}>
               {status === "sending" ? "Sending…" : "Get my estimate by email"}

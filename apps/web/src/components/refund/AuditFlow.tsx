@@ -164,7 +164,7 @@ export function AuditFlow() {
             <div className="p-6 md:p-10">
               <div className="flex flex-wrap items-end justify-between gap-6">
                 <div>
-                  <p className="eyebrow text-clearance-green">Eligibility estimate — not a claim</p>
+                  <p className="eyebrow text-green-ink">Eligibility estimate — not a claim</p>
                   <p className="mt-3 font-display text-[clamp(2.5rem,5vw,4rem)] leading-none text-harbor-navy">
                     {formatCurrency(totalEstimate)}
                   </p>
@@ -206,7 +206,7 @@ export function AuditFlow() {
                         <td className="p-4">
                           <span
                             className={`inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] ${
-                              entry.eligible ? "text-clearance-green" : "text-ink-soft"
+                              entry.eligible ? "text-green-ink" : "text-ink-soft"
                             }`}
                           >
                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -272,7 +272,7 @@ export function AuditFlow() {
                 <p className="max-w-[40ch] text-[0.9375rem] leading-relaxed text-ink">
                   {fileName ? (
                     <>
-                      <span className="font-mono text-sm text-clearance-green">{fileName}</span>
+                      <span className="font-mono text-sm text-green-ink">{fileName}</span>
                       <br />
                       Loaded {rows.length.toLocaleString()} entries. Drop a new file to replace, or click to re-upload.
                     </>

@@ -104,7 +104,7 @@ export function PricingPreview() {
               <ul className="mt-6 flex-1 space-y-3">
                 {tier.features.map((f) => (
                   <li key={f} className="flex items-start gap-3 text-[0.9375rem] leading-snug text-ink">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="mt-0.5 shrink-0 text-clearance-green">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="mt-0.5 shrink-0 text-green-ink">
                       <path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     {f}
@@ -123,7 +123,7 @@ export function PricingPreview() {
         <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
           {["No handling fees", "No monthly minimums", "Refunds filed free — no % cut"].map((line) => (
             <p key={line} className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-ink-soft" data-tier-pop>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" className="text-clearance-green">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" className="text-green-ink">
                 <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               {line}

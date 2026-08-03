@@ -84,7 +84,7 @@ export function Testimonials() {
                 <p className="font-mono text-xs uppercase tracking-[0.18em] text-signal-blue-deep">
                   {t.role}
                 </p>
-                <p className="mt-1 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-soft/70">
+                <p className="mt-1 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-soft">
                   PLACEHOLDER — awaiting verified quote
                 </p>
               </figcaption>

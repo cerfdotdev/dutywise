@@ -90,7 +90,7 @@ export default function BillingPage() {
           <div className="mt-5 flex h-44 items-end gap-2 sm:gap-3" role="img" aria-label="Monthly invoice totals bar chart">
             {series.map((s) => (
               <div key={s.month} className="flex h-full flex-1 flex-col items-center gap-1">
-                <span className="hidden font-mono text-[0.625rem] text-mist/50 sm:block">
+                <span className="hidden font-mono text-[0.625rem] text-mist/70 sm:block">
                   {formatUsd(s.total)}
                 </span>
                 <div className="flex w-full flex-1 items-end">
@@ -100,7 +100,7 @@ export default function BillingPage() {
                     title={`${s.month}: ${formatUsd(s.total)}`}
                   />
                 </div>
-                <span className="font-mono text-[0.625rem] uppercase tracking-wider text-mist/50">
+                <span className="font-mono text-[0.625rem] uppercase tracking-wider text-mist/70">
                   {s.month}
                 </span>
               </div>
@@ -144,7 +144,7 @@ export default function BillingPage() {
                         >
                           <span
                             aria-hidden="true"
-                            className={`text-[0.625rem] text-mist/50 transition-transform ${open ? "rotate-90" : ""}`}
+                            className={`text-[0.625rem] text-mist/70 transition-transform ${open ? "rotate-90" : ""}`}
                           >
                             ▸
                           </span>

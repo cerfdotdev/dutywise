@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { ApiError, statusLabel } from "@/lib/api";
 
 export const inputClass =
-  "w-full rounded-md border border-white/15 bg-harbor-navy px-3.5 py-2.5 text-sm text-paper placeholder:text-mist/40 transition-colors focus:border-signal-blue focus:outline-none focus:ring-1 focus:ring-signal-blue";
+  "w-full rounded-md border border-white/15 bg-harbor-navy px-3.5 py-2.5 text-sm text-paper placeholder:text-mist/70 transition-colors focus:border-signal-blue focus:outline-none focus:ring-1 focus:ring-signal-blue";
 
 export const btnAmber =
   "inline-flex w-full items-center justify-center gap-2 rounded-md bg-duty-amber px-5 py-3 text-sm font-medium text-ink transition-colors hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60";
@@ -84,7 +84,7 @@ export function StatCard({
       >
         {value}
       </p>
-      {sub ? <p className="mt-2 text-xs text-mist/60">{sub}</p> : null}
+      {sub ? <p className="mt-2 text-xs text-mist/75">{sub}</p> : null}
     </Card>
   );
 }
@@ -138,7 +138,7 @@ export function DataTable({
             {head.map((h) => (
               <th
                 key={h}
-                className="whitespace-nowrap px-4 py-3 text-left font-mono text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-mist/60"
+                className="whitespace-nowrap px-4 py-3 text-left font-mono text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-mist/75"
               >
                 {h}
               </th>
@@ -192,7 +192,7 @@ export function Field({
         {label}
       </span>
       {children}
-      {hint ? <span className="mt-1.5 block text-xs leading-relaxed text-mist/60">{hint}</span> : null}
+      {hint ? <span className="mt-1.5 block text-xs leading-relaxed text-mist/75">{hint}</span> : null}
     </label>
   );
 }
@@ -217,7 +217,7 @@ export function SectionTitle({
 export function EmptyState({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-lg border border-dashed border-white/15 px-6 py-10 text-center">
-      <p className="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-mist/60">{title}</p>
+      <p className="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-mist/75">{title}</p>
       <p className="mx-auto mt-2 max-w-[46ch] text-sm leading-relaxed text-mist/70">{body}</p>
     </div>
   );
@@ -255,6 +255,6 @@ export function ErrorBox({ message }: { message: string }) {
 
 export function MiniLabel({ children }: { children: ReactNode }) {
   return (
-    <dt className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-mist/50">{children}</dt>
+    <dt className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-mist/70">{children}</dt>
   );
 }

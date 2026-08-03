@@ -118,7 +118,7 @@ export function HowItWorks() {
         <div className="mt-12 space-y-8">
           {steps.map((step) => (
             <article key={step.n} data-hiw-card className="rounded-lg border border-white/10 bg-white/[0.04] p-8">
-              <p className="font-display text-6xl text-white/15">{step.n}</p>
+              <p className="font-display text-6xl text-white/45">{step.n}</p>
               <h3 className="mt-4 font-display text-3xl">{step.title}</h3>
               <p className="mt-3 max-w-[46ch] leading-[1.7] text-mist">{step.body}</p>
               <div className="mt-6 space-y-1.5 rounded-md bg-navy-deep/60 p-4 font-mono text-sm">
@@ -141,7 +141,7 @@ export function HowItWorks() {
             {steps.map((step) => (
               <div key={step.n} data-hiw-panel className="w-[33.3333%] pr-16">
                 <div className="flex items-baseline gap-6">
-                  <p className="font-display text-[clamp(6rem,14vw,12rem)] leading-none text-white/10">
+                  <p className="font-display text-[clamp(6rem,14vw,12rem)] leading-none text-white/40">
                     {step.n}
                   </p>
                   <h3 className="font-display text-[clamp(2.5rem,4vw,4rem)]" data-reveal>

@@ -199,14 +199,14 @@ export default function OverviewPage() {
                       </span>
                     </div>
                     <p className="mt-1 text-sm text-paper">{c.description}</p>
-                    <p className="mt-1 font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-mist/50">
+                    <p className="mt-1 font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-mist/70">
                       Effective {fmtDate(c.effectiveDate)} · {c.matchedSkus.length.toLocaleString()} SKU
                       {c.matchedSkus.length === 1 ? "" : "s"} matched
                     </p>
                   </div>
                 ))}
                 {monitoring.activeChanges.length > 4 ? (
-                  <p className="mt-3 font-mono text-xs text-mist/50">
+                  <p className="mt-3 font-mono text-xs text-mist/70">
                     +{monitoring.activeChanges.length - 4} more — see Alerts for the full list
                   </p>
                 ) : null}

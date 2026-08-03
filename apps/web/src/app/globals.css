@@ -11,6 +11,8 @@
   --color-surface: #ffffff;
   --color-ink: #1a2332;
   --color-ink-soft: #4a5568;
+  --color-amber-ink: #8a5a00; /* AA text on light surfaces (amber is fill-only) */
+  --color-green-ink: #1e7a46; /* AA text on light surfaces (green is fill-only) */
   --color-mist: #b8c7dc;
   --color-hairline: #e5dfd3;
 

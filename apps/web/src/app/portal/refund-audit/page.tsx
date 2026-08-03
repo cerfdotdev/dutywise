@@ -294,7 +294,7 @@ export default function RefundAuditPage() {
             <SectionTitle sub="What happens next">Summary</SectionTitle>
             <p className="mt-3 text-sm leading-relaxed text-mist/80">{report.summary}</p>
             {report.disclaimer ? (
-              <p className="mt-4 border-t border-white/10 pt-4 text-xs leading-relaxed text-mist/60">
+              <p className="mt-4 border-t border-white/10 pt-4 text-xs leading-relaxed text-mist/75">
                 {report.disclaimer}
               </p>
             ) : null}
@@ -355,7 +355,7 @@ export default function RefundAuditPage() {
                 }`}
               >
                 <span className="text-sm font-medium text-paper">Drop a CSV here, or click to browse</span>
-                <span className="font-mono text-xs uppercase tracking-[0.12em] text-mist/60">
+                <span className="font-mono text-xs uppercase tracking-[0.12em] text-mist/75">
                   Columns: entry_number, amount_paid · up to 2 MB
                 </span>
               </button>
@@ -420,7 +420,7 @@ export default function RefundAuditPage() {
           </form>
 
           <div className="mt-6 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-            <p className="text-xs text-mist/60">Eligibility is CBP&apos;s call — estimates are never claims.</p>
+            <p className="text-xs text-mist/75">Eligibility is CBP&apos;s call — estimates are never claims.</p>
             <button
               type="button"
               onClick={viewSample}

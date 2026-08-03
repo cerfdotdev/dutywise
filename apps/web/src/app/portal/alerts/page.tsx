@@ -139,7 +139,7 @@ export default function AlertsPage() {
             .filter((g) => g.items.length > 0)
             .map((group) => (
               <section key={group.severity} aria-label={`${group.label} alerts`}>
-                <h2 className="mb-3 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-mist/60">
+                <h2 className="mb-3 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-mist/75">
                   {group.label} · {group.items.length}
                 </h2>
                 <div className="space-y-3">
@@ -150,7 +150,7 @@ export default function AlertsPage() {
                         <span className="rounded-full border border-white/15 px-2.5 py-1 font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-mist/70">
                           {statusLabel(alert.type)}
                         </span>
-                        <span className="ml-auto font-mono text-xs text-mist/50">
+                        <span className="ml-auto font-mono text-xs text-mist/70">
                           {fmtDateTime(alert.createdAt)}
                         </span>
                       </div>
@@ -168,7 +168,7 @@ export default function AlertsPage() {
                             Acknowledge
                           </button>
                         ) : (
-                          <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-mist/50">
+                          <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-mist/70">
                             {alert.status === "resolved" ? "Resolved" : "Acknowledged"}
                           </span>
                         )}

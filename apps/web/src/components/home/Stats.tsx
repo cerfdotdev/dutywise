@@ -82,7 +82,7 @@ export function Stats() {
           </div>
         ))}
       </div>
-      <p className="shell pb-10 font-mono text-xs uppercase tracking-[0.18em] text-ink-soft/70">
+      <p className="shell pb-10 font-mono text-xs uppercase tracking-[0.18em] text-ink-soft">
         *Placeholder — verify with first-party data before public use.
       </p>
     </section>

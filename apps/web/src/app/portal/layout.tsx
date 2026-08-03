@@ -158,7 +158,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             <Link href="/portal" className="font-display text-xl font-semibold leading-none text-paper">
               DutyWise
             </Link>
-            <p className="mt-1.5 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-mist/60">
+            <p className="mt-1.5 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-mist/75">
               Customer portal
             </p>
           </div>
@@ -191,7 +191,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
           <div className="border-t border-white/10 px-5 py-4">
             <p className="truncate text-sm font-medium text-paper">{meData.company.name}</p>
-            <p className="mt-0.5 truncate font-mono text-xs text-mist/60">{meData.user.email}</p>
+            <p className="mt-0.5 truncate font-mono text-xs text-mist/75">{meData.user.email}</p>
             <button
               type="button"
               onClick={handleLogout}

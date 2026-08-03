@@ -31,7 +31,7 @@ export function Accordion({ items, defaultOpen, className = "" }: AccordionProps
               >
                 <span
                   className={`font-mono text-xs tracking-[0.18em] ${
-                    isOpen ? "text-signal-blue-deep" : "text-ink-soft/70"
+                    isOpen ? "text-signal-blue-deep" : "text-ink-soft"
                   }`}
                 >
                   0{i + 1}

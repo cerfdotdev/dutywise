@@ -324,7 +324,7 @@ export default function EntriesPage() {
                         >
                           <span
                             aria-hidden="true"
-                            className={`text-[0.625rem] text-mist/50 transition-transform ${open ? "rotate-90" : ""}`}
+                            className={`text-[0.625rem] text-mist/70 transition-transform ${open ? "rotate-90" : ""}`}
                           >
                             ▸
                           </span>

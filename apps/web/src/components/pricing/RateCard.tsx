@@ -121,11 +121,11 @@ export function RateCard() {
 
         <div className="mt-6 grid gap-6 md:grid-cols-3">
           <div data-rate-reveal className="card rounded-lg p-8">
-            <p className="font-mono text-xs uppercase tracking-[0.18em] text-clearance-green">Included</p>
+            <p className="font-mono text-xs uppercase tracking-[0.18em] text-green-ink">Included</p>
             <ul className="mt-5 space-y-3">
               {included.map((item) => (
                 <li key={item} className="flex items-start gap-3 text-sm leading-snug text-ink">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="mt-0.5 shrink-0 text-clearance-green">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="mt-0.5 shrink-0 text-green-ink">
                     <path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   {item}
