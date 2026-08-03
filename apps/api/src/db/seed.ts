@@ -107,7 +107,6 @@ export async function seedDemo(db: ReturnType<typeof createDb>): Promise<boolean
 }
 
 // Standalone execution: tsx src/db/seed.ts
-import { fileURLToPath } from 'node:url';
 import { schema } from '../db/index.js';
 
 // Standalone execution: tsx src/db/seed.ts (never fires inside the tsup bundle).
